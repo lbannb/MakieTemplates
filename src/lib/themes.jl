@@ -1,14 +1,8 @@
-function scatterTheme()
-    return Theme(
+function main_theme!()
+    theme = Theme(
         figure_padding=2,
-        size=(246, 246),
-        fontsize=8,
-        Scatter=(
-            markersize=4.0,
-            strokewidth=0.15,
-            marker=:circle,
-            strokecolor=(:black, 0.5),
-        ),
+        size=(250, 200),
+        fontsize=FONTSIZE,
         Errorbars=(
             linewidth=0.35,
             whiskerwidth=2.0,
@@ -42,4 +36,23 @@ function scatterTheme()
             framevisible=false,
         ),
     )
+
+    theme = merge(theme, theme_latexfonts())
+    update_theme!(theme)
+end
+
+function use_scatter_gradient_theme!()
+    main_theme!()
+
+    theme = Theme(
+        Scatter=(
+            markersize=4.0,
+            strokewidth=0.15,
+            marker=:circle,
+            strokecolor=(:black, 0.5),
+        )
+    )
+
+    theme = merge(theme, Makie.current_default_theme())
+    update_theme!(theme)
 end
