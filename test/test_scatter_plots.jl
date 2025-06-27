@@ -53,7 +53,7 @@ ys2err = [
 ds2 = file["ds2"]
 close(file)
 
-scatter_gradient(xs1,ys1,ds1; 
+scatter_gradient(xs1[1:2],ys1[1:2],ds1[1:2]; 
     xlabel=L"\text{measurement strength } \gamma",
     ylabel=L"I_c",
     legendlabel=L"d")

@@ -3,7 +3,9 @@
 =#
 
 
-function scatter_gradient(x::Vector{Vector{Float64}},y::Vector{Vector{Float64}},grad::Union{Vector{Float64},Vector{Int}}; 
+function scatter_gradient(x::Union{Vector{Vector{Float64}},Vector{Vector{Int}}},
+        y::Vector{Vector{Float64}},
+        grad::Union{Vector{Float64},Vector{Int}}; 
         xlabel::Union{String,LaTeXString}="", 
         ylabel::Union{String,LaTeXString}="", 
         legendlabel::Union{String,LaTeXString}="",
