@@ -1,0 +1,7 @@
+name = "juliaPlotting"
+uuid = "e2fdfefe-004e-47ee-bc5c-07811b281e5e"
+authors = ["Lukas Reich <38758786+lreich@users.noreply.github.com>"]
+version = "0.1.0"
+
+[deps]
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
