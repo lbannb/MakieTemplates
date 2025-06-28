@@ -11,7 +11,7 @@ include("lib/main.jl")
 include("lib/themes.jl")
 
 #= export all functions =#
-export main_theme!, use_scatter_gradient_theme!
-export scatter_gradient
+export main_theme!, use_scatter_theme!
+export scatter_gradient, scatter_line
 
 end

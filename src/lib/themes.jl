@@ -19,6 +19,9 @@ function main_theme!()
             yticksize=2.5,
             xminorticksize=1.5,
             yminorticksize=1.5,
+            # leaves 5% spacing between first tick and origin and last tick and end of box
+            xautolimitmargin=(0.05,0.05),
+            yautolimitmargin=(0.05,0.05),
             spinewidth=0.75,
             xtickwidth=0.75,
             ytickwidth=0.75,
@@ -41,16 +44,17 @@ function main_theme!()
     update_theme!(theme)
 end
 
-function use_scatter_gradient_theme!()
+function use_scatter_theme!()
     main_theme!()
 
     theme = Theme(
         Scatter=(
             markersize=4.0,
-            strokewidth=0.15,
+            strokewidth=0.35,
             marker=:circle,
             strokecolor=(:black, 0.5),
-        )
+        ),
+        palette = (; color = ColorSchemes.tol_bright) # color blind scheme
     )
 
     theme = merge(theme, Makie.current_default_theme())
