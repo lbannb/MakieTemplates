@@ -38,6 +38,15 @@ function main_theme!()
             margin=(2, 2, 2, 2),
             framevisible=false,
         ),
+        Lines=(
+            linewidth = 1,
+        ),
+        HLines=(
+            linewidth = 1,
+        ),
+        VLines=(
+            linewidth = 1,
+        ),
     )
 
     theme = merge(theme, theme_latexfonts())

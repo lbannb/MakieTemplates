@@ -7,11 +7,12 @@ using CairoMakie, ColorSchemes, JLD2, Measurements, LaTeXStrings
 global FONTSIZE = 8 # paper font size
 
 #= load local files =#
+include("lib/helper.jl")
 include("lib/main.jl")
 include("lib/themes.jl")
 
 #= export all functions =#
 export main_theme!, use_scatter_theme!
-export scatter_gradient, scatter_line
+export layout_1_1, scatter_many!, create_inset
 
 end
