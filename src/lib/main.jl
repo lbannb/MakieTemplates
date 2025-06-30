@@ -63,41 +63,38 @@ function create_inset(fig::Figure, ax::Axis;
     return ax_inset
 end
 
-function scatter_gradient(ax::Axis, 
+#= 
+see https://juliagraphics.github.io/ColorSchemes.jl/stable/goodpractice/ for good ColorSchemes
+=#
+function scatter_gradient!(fig::Figure,
+        ax::Axis, 
         x::Union{Vector{Vector{Float64}},Vector{Vector{Int}}},
         y::Vector{Vector{Float64}},
         grad::Vector{Float64};
-        labels = fill("", length(x)),
-        legendlabel::Union{String,LaTeXString}="",
-        xlims::Union{Tuple{Float64, Float64},Nothing}=nothing,
-        ylims::Union{Tuple{Float64, Float64},Nothing}=nothing,
-        colors::Union{ColorScheme,String}=ColorSchemes.tol_bright)
-    use_scatter_theme!()
+        colormap::Union{ColorScheme,String}=ColorSchemes.linear_tritanopic_krjcw_5_95_c24_n256,
+        linestyle::Union{Symbol,Nothing}=nothing,
+        linewidth::Float64=1.0)
 
-    if typeof(colors)==String
-        colors = colorschemes[findcolorscheme(colors)[1]]
+    if typeof(colormap)==String
+        colormap = colorschemes[findcolorscheme(colormap)[1]]
     end
     
-    # this scales the size of the rendered figure in the notebook by 1.75
-    CairoMakie.activate!(type="svg", pt_per_unit=1.75)
+    # Define normalized grad values
+    grad_norm = (grad .- minimum(grad)) ./ (maximum(grad) - minimum(grad))
+
+    # Get color values from colormap
+    colors = [get(colormap, g) for g in grad_norm]
 
     for i in eachindex(x)
-        scatter!(ax, x[i], y[i], color = colors[i], label = "$(labels[i])")
+        if !isnothing(linestyle)
+            lines!(ax, x[i], y[i], color = colors[i], linestyle=linestyle, linewidth=linewidth)
+        end
+
+        scatter!(ax, x[i], y[i], color = colors[i])
     end
 
-    axislegend(ax, legendlabel)
-    
-    #= add 5% spacing to the x/y ticks of the start and end of xlims/ylims =#
-    if !isnothing(ylims)
-        yrange = ylims[2] - ylims[1]
-        Makie.ylims!(ax, ylims[1] - 0.05*yrange, ylims[2] + 0.05*yrange)
-    end
-    if !isnothing(xlims)
-        yrange = xlims[2] - xlims[1]
-        Makie.ylims!(ax, xlims[1] - 0.05*yrange, xlims[2] + 0.05*yrange)
-    end
-
-    return fig
+    # Add colorbar
+    Colorbar(fig[1,2], colormap=colormap)
 end
 
 function scatter_many!(ax::Axis, 
@@ -114,9 +111,6 @@ function scatter_many!(ax::Axis,
         colors = colorschemes[findcolorscheme(colors)[1]]
     end
     
-    # this scales the size of the rendered figure in the notebook by 1.75
-    CairoMakie.activate!(type="svg", pt_per_unit=1.75)
-
     for i in eachindex(x)
         if !isnothing(linestyle)
             lines!(ax, x[i], y[i], color = colors[i], linestyle=linestyle, linewidth=linewidth)

@@ -49,6 +49,9 @@ function main_theme!()
         ),
     )
 
+    # use CairoMakie as backend
+    CairoMakie.activate!(type="svg", pt_per_unit=1.75)
+
     theme = merge(theme, theme_latexfonts())
     update_theme!(theme)
 end
