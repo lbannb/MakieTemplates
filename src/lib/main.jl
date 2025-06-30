@@ -71,19 +71,14 @@ function scatter_gradient!(fig::Figure,
         x::Union{Vector{Vector{Float64}},Vector{Vector{Int}}},
         y::Vector{Vector{Float64}},
         grad::Vector{Float64};
-        colormap::Union{ColorScheme,String}=ColorSchemes.linear_tritanopic_krjcw_5_95_c24_n256,
-        linestyle::Union{Symbol,Nothing}=nothing,
-        linewidth::Float64=1.0)
 
-    if typeof(colormap)==String
-        colormap = colorschemes[findcolorscheme(colormap)[1]]
-    end
-    
-    # Define normalized grad values
-    grad_norm = (grad .- minimum(grad)) ./ (maximum(grad) - minimum(grad))
+        colormap::ColorScheme=ColorSchemes.linear_tritanopic_krjcw_5_95_c24_n256,
+        linestyle::Union{Symbol,Nothing}=nothing,
+        linewidth::Float64=1.0,
+        colorbarlabel::Union{String,LaTeXString}="")
 
     # Get color values from colormap
-    colors = [get(colormap, g) for g in grad_norm]
+    colors = [get(colormap, g) for g in normalize(grad)]
 
     for i in eachindex(x)
         if !isnothing(linestyle)
@@ -94,7 +89,10 @@ function scatter_gradient!(fig::Figure,
     end
 
     # Add colorbar
-    Colorbar(fig[1,2], colormap=colormap)
+    Colorbar(fig[1,2], colormap=colormap, colorrange=(minimum(grad),maximum(grad)),
+        label=colorbarlabel)
+
+    colgap!(fig.layout, 5.0) # remove spacing between colorbar and plot
 end
 
 function scatter_many!(ax::Axis, 
@@ -103,14 +101,10 @@ function scatter_many!(ax::Axis,
         labels = fill("", length(x)),
         legendlabel::Union{String,LaTeXString}="",
         legendpos::Symbol=:lt,
-        colors::Union{ColorScheme,String}=ColorSchemes.tol_bright,
+        colors::ColorScheme=ColorSchemes.tol_bright,
         linestyle::Union{Symbol,Nothing}=nothing,
         linewidth::Float64=1.0)
 
-    if typeof(colors)==String
-        colors = colorschemes[findcolorscheme(colors)[1]]
-    end
-    
     for i in eachindex(x)
         if !isnothing(linestyle)
             lines!(ax, x[i], y[i], color = colors[i], linestyle=linestyle, linewidth=linewidth)

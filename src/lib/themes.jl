@@ -1,6 +1,6 @@
 function main_theme!()
     theme = Theme(
-        figure_padding=2,
+        figure_padding=5,
         size=(250, 200),
         fontsize=FONTSIZE,
         Errorbars=(
