@@ -78,7 +78,8 @@ function scatter_gradient!(fig::Figure,
         colorbarlabel::Union{String,LaTeXString}="")
 
     # Get color values from colormap
-    colors = [get(colormap, g) for g in normalize(grad)]
+    normgrad = (grad .- minimum(grad)) ./ (maximum(grad) - minimum(grad))
+    colors = [get(colormap, g) for g in normgrad]
 
     for i in eachindex(x)
         if !isnothing(linestyle)
