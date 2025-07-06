@@ -71,7 +71,6 @@ function scatter_gradient!(fig::Figure,
         x::Union{Vector{Vector{Float64}},Vector{Vector{Int}}},
         y::Vector{Vector{Float64}},
         grad::Vector{Float64};
-
         colormap::ColorScheme=ColorSchemes.linear_tritanopic_krjcw_5_95_c24_n256,
         linestyle::Union{Symbol,Nothing}=nothing,
         linewidth::Float64=1.0,
