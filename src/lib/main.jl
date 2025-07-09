@@ -103,6 +103,7 @@ function scatter_many!(ax::Axis,
         legendpos::Symbol=:lt,
         colors::ColorScheme=ColorSchemes.tol_bright,
         linestyle::Union{Symbol,Nothing}=nothing,
+        markers::Union{Array{Symbol},Nothing} = nothing,
         linewidth::Float64=1.0)
 
     for i in eachindex(x)
@@ -110,7 +111,17 @@ function scatter_many!(ax::Axis,
             lines!(ax, x[i], y[i], color = colors[i], linestyle=linestyle, linewidth=linewidth)
         end
 
-        scatter!(ax, x[i], y[i], color = colors[i], label = "$(labels[i])")
+        if isnothing(markers)
+            scatter!(ax, x[i], y[i], color = colors[i], label = "$(labels[i])")
+        else
+            if length(markers) == x
+                scatter!(ax, x[i], y[i], color = colors[i], marker = markers[i], label = "$(labels[i])")
+            else
+                scatter!(ax, x[i], y[i], color = colors[i], label = "$(labels[i])")
+
+                @warn "The number of markers does not match the number of different scatter sets. \n The default marker is now applied to all scatter points."
+            end
+        end
     end
 
     if labels != fill("", length(x))
