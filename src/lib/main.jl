@@ -20,17 +20,35 @@ function layout_1_1(;
 
     pretty_lims!(ax, xlims, ylims)
 
-    # #= add 5% spacing to the x/y ticks of the start and end of xlims/ylims =#
-    # if !isnothing(ylims)
-    #     yrange = ylims[2] - ylims[1]
-    #     Makie.ylims!(ax, ylims[1] - 0.05*yrange, ylims[2] + 0.05*yrange)
-    # end
-    # if !isnothing(xlims)
-    #     xrange = xlims[2] - xlims[1]
-    #     Makie.xlims!(ax, xlims[1] - 0.05*xrange, xlims[2] + 0.05*xrange)
-    # end
-
     return fig,ax
+end
+
+function layout_1_2(;
+        theme::Function=main_theme!,
+        xlabel::Union{Vector{Union{String,LaTeXString}},Union{String,LaTeXString},Nothing}=nothing, 
+        ylabel::Union{Vector{Union{String,LaTeXString}},Union{String,LaTeXString},Nothing}=nothing, 
+        xlims::Union{Vector{Union{Tuple{Float64, Float64},Nothing}},Tuple{Float64, Float64},Nothing}=nothing,
+        ylims::Union{Vector{Union{Tuple{Float64, Float64},Nothing}},Tuple{Float64, Float64},Nothing}=nothing)
+
+    theme()
+    
+    fig = Figure(size=(500, 200))
+    ax1 = Axis(fig[1, 1],
+        xlabel = isa(xlabel, AbstractVector) ? xlabel[1] : xlabel,
+        ylabel = isa(ylabel, AbstractVector) ? ylabel[1] : ylabel,
+        limits = (isa(xlims, AbstractVector) ? xlims[1] : xlims, isa(ylims, AbstractVector) ? ylims[1] : ylims)
+    )
+    ax2 = Axis(fig[1, 2],
+        xlabel = isa(xlabel, AbstractVector) ? xlabel[2] : xlabel,
+        ylabel = isa(ylabel, AbstractVector) ? ylabel[2] : ylabel,
+        limits = (isa(xlims, AbstractVector) ? xlims[2] : xlims, isa(ylims, AbstractVector) ? ylims[2] : ylims)
+    )
+
+
+    pretty_lims!(ax1, isa(xlims, AbstractVector) ? xlims[1] : xlims, isa(ylims, AbstractVector) ? ylims[1] : ylims)
+    pretty_lims!(ax2, isa(xlims, AbstractVector) ? xlims[2] : xlims, isa(ylims, AbstractVector) ? ylims[2] : ylims)
+
+    return fig,ax1,ax2
 end
 
 function create_inset(fig::Figure, ax::Axis; 
@@ -105,6 +123,8 @@ function scatter_many!(ax::Axis,
         linestyle::Union{Symbol,Nothing}=nothing,
         markers::Union{Array{Symbol},Nothing} = nothing,
         linewidth::Float64=1.0)
+
+    use_scatter_theme!()
 
     for i in eachindex(x)
         if !isnothing(linestyle)
