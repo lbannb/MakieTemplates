@@ -34,3 +34,20 @@ function pretty_lims!(ax, xlims, ylims)
         Makie.ylims!(ax, ylims[1] - 0.05*yrange, ylims[2] + 0.05*yrange)
     end
 end
+
+const markers_labels = [:circle,
+    :rect,
+    :diamond,
+    :hexagon,
+    :cross,
+    :xcross,
+    :utriangle,
+    :dtriangle,
+    :ltriangle,
+    :rtriangle,
+    :pentagon,
+    :star4,
+    :star5,
+    :star6,
+    :star8,
+]

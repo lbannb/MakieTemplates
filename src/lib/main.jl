@@ -134,7 +134,7 @@ function scatter_many!(ax::Axis,
         if isnothing(markers)
             scatter!(ax, x[i], y[i], color = colors[i], label = "$(labels[i])")
         else
-            if length(markers) == x
+            if length(markers) == length(x)
                 scatter!(ax, x[i], y[i], color = colors[i], marker = markers[i], label = "$(labels[i])")
             else
                 scatter!(ax, x[i], y[i], color = colors[i], label = "$(labels[i])")
