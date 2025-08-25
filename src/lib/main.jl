@@ -121,7 +121,7 @@ function scatter_many!(ax::Axis,
         legendpos::Symbol=:lt,
         colors::ColorScheme=ColorSchemes.tol_bright,
         linestyle::Union{Symbol,Nothing}=nothing,
-        markers::Union{Array{Symbol},Nothing} = nothing,
+        markers::Union{Array{Symbol},Nothing} = markers_labels,
         linewidth::Float64=1.0)
 
     use_scatter_theme!()
