@@ -79,11 +79,10 @@ function use_scatter_hollow_theme!()
     theme = Theme(
         Scatter=(
             markersize=4.0,
-            strokewidth=0.9,
+            strokewidth=0.5,
             marker=:circle,
-            color = :transparent,
+            color=:transparent,
         ),
-        palette = (; strokecolor = ColorSchemes.tol_bright) # color blind scheme
     )
 
     theme = merge(theme, Makie.current_default_theme())

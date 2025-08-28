@@ -125,24 +125,30 @@ function scatter_many!(ax::Axis,
         linewidth::Float64=1.0,
         hollow::Bool=false)
 
-    if hollow
-        use_scatter_hollow_theme!()
-    else
-        use_scatter_theme!()
-    end
-
     for i in eachindex(x)
         if !isnothing(linestyle)
-            lines!(ax, x[i], y[i], color = colors[i], linestyle=linestyle, linewidth=linewidth)
+            lines!(ax, x[i], y[i], linestyle=linestyle, linewidth=linewidth)
         end
 
         if isnothing(markers)
-            scatter!(ax, x[i], y[i], color = colors[i], label = "$(labels[i])")
-        else
-            if length(markers) == length(x)
-                scatter!(ax, x[i], y[i], color = colors[i], marker = markers[i], label = "$(labels[i])")
+            if hollow
+                scatter!(ax, x[i], y[i], color = :transparent, strokecolor = colors[i], label = "$(labels[i])")
             else
                 scatter!(ax, x[i], y[i], color = colors[i], label = "$(labels[i])")
+            end
+        else
+            if length(markers) == length(x)
+                if hollow
+                    scatter!(ax, x[i], y[i], color = :transparent, strokecolor = colors[i], marker = markers[i], label = "$(labels[i])")
+                else
+                    scatter!(ax, x[i], y[i], color = colors[i], marker = markers[i], label = "$(labels[i])")
+                end
+            else
+                if hollow
+                    scatter!(ax, x[i], y[i], color = :transparent, strokecolor = colors[i], label = "$(labels[i])")
+                else
+                    scatter!(ax, x[i], y[i], color = colors[i], label = "$(labels[i])")
+                end
 
                 @warn "The number of markers does not match the number of different scatter sets. \n The default marker is now applied to all scatter points."
             end
