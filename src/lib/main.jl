@@ -122,9 +122,14 @@ function scatter_many!(ax::Axis,
         colors::ColorScheme=ColorSchemes.tol_bright,
         linestyle::Union{Symbol,Nothing}=nothing,
         markers::Union{Array{Symbol},Nothing} = markers_labels,
-        linewidth::Float64=1.0)
+        linewidth::Float64=1.0,
+        hollow::Bool=false)
 
-    use_scatter_theme!()
+    if hollow
+        use_scatter_hollow_theme!()
+    else
+        use_scatter_theme!()
+    end
 
     for i in eachindex(x)
         if !isnothing(linestyle)
