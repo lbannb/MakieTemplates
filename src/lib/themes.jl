@@ -18,7 +18,9 @@ function main_theme!()
             xticksize=2.5,
             yticksize=2.5,
             xminorticksize=1.5,
+            xminortickwidth = 0.6,
             yminorticksize=1.5,
+            yminortickwidth = 0.6,
             # leaves 5% spacing between first tick and origin and last tick and end of box
             xautolimitmargin=(0.05,0.05),
             yautolimitmargin=(0.05,0.05),
