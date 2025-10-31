@@ -35,7 +35,7 @@ function pretty_lims!(ax, xlims, ylims)
     end
 end
 
-markers_labels_hollow = [:xcross,
+markers_labels_hollow = [:circle,
     :utriangle,
     :circle,
     :rect,

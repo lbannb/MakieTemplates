@@ -82,9 +82,8 @@ function use_scatter_hollow_theme!()
         palette = (strokecolor = ColorSchemes.tol_bright, marker = markers_labels_hollow),
         Scatter=(
             markersize=6.0,
-            strokewidth=0.5,
+            strokewidth=0.65,
             color=:transparent,
-            strokecolor=(:black, 0.5),
             cycle = Cycle([:strokecolor, :marker], covary = true),
         ),
     )
