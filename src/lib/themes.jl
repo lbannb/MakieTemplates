@@ -87,11 +87,8 @@ function use_scatter_hollow_theme!()
             strokecolor=(:black, 0.5),
             cycle = Cycle([:strokecolor, :marker], covary = true),
         ),
-        # palette = ( strokecolor = [:red,:green]), # color blind scheme
-        # cycle = [:strokecolor],
     )
 
     theme = merge(theme, Makie.current_default_theme())
-    # theme = merge(Makie.current_default_theme(), theme)
     update_theme!(theme)
 end
