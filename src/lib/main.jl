@@ -81,6 +81,10 @@ function create_inset(fig::Figure, ax::Axis;
     return ax_inset
 end
 
+function scatter_hollow!(ax::Axis, x, y; kwargs...)
+    scatter!(ax, x, y, color = :transparent; kwargs...)
+end
+
 #= 
 see https://juliagraphics.github.io/ColorSchemes.jl/stable/goodpractice/ for good ColorSchemes
 =#

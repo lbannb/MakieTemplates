@@ -35,7 +35,25 @@ function pretty_lims!(ax, xlims, ylims)
     end
 end
 
-const markers_labels = [:circle,
+markers_labels_hollow = [:xcross,
+    :utriangle,
+    :circle,
+    :rect,
+    :diamond,
+    :hexagon,
+    :xcross,
+    :utriangle,
+    :dtriangle,
+    :ltriangle,
+    :rtriangle,
+    :pentagon,
+    :star4,
+    :star5,
+    :star6,
+    :star8,
+]
+
+markers_labels = [:circle,
     :rect,
     :diamond,
     :hexagon,

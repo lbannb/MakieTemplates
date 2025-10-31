@@ -62,13 +62,13 @@ function use_scatter_theme!()
     main_theme!()
 
     theme = Theme(
+        palette = (color = ColorSchemes.tol_bright, marker = markers_labels),
         Scatter=(
-            markersize=4.0,
+            markersize=5.0,
             strokewidth=0.35,
-            marker=:circle,
             strokecolor=(:black, 0.5),
+            cycle = Cycle([:color, :marker], covary = true),
         ),
-        palette = (; color = ColorSchemes.tol_bright) # color blind scheme
     )
 
     theme = merge(theme, Makie.current_default_theme())
@@ -79,14 +79,19 @@ function use_scatter_hollow_theme!()
     main_theme!()
 
     theme = Theme(
+        palette = (strokecolor = ColorSchemes.tol_bright, marker = markers_labels_hollow),
         Scatter=(
-            markersize=4.0,
+            markersize=6.0,
             strokewidth=0.5,
-            marker=:circle,
             color=:transparent,
+            strokecolor=(:black, 0.5),
+            cycle = Cycle([:strokecolor, :marker], covary = true),
         ),
+        # palette = ( strokecolor = [:red,:green]), # color blind scheme
+        # cycle = [:strokecolor],
     )
 
     theme = merge(theme, Makie.current_default_theme())
+    # theme = merge(Makie.current_default_theme(), theme)
     update_theme!(theme)
 end
