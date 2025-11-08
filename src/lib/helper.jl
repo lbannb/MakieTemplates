@@ -18,7 +18,10 @@ function get_BBox(axis; width = 50, height = 50, position = :rt, margin = (3, 3,
 	elseif position == :lb  # left bottom
 		x = ax_pos.origin[1] + margin[4]
 		y = ax_pos.origin[2] + margin[3]
-	end
+	elseif position == :cb  # center bottom
+        x = ax_pos.origin[1] + (ax_pos.widths[1] - width) / 2 + margin[2]
+        y = ax_pos.origin[2] + margin[3]
+    end
 
 	return BBox(x, x + width, y, y + height)
 end
