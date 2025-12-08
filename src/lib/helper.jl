@@ -21,6 +21,9 @@ function get_BBox(axis; width = 50, height = 50, position = :rt, margin = (3, 3,
 	elseif position == :cb  # center bottom
         x = ax_pos.origin[1] + (ax_pos.widths[1] - width) / 2 + margin[2]
         y = ax_pos.origin[2] + margin[3]
+    elseif position == :ct  # center top
+        x = ax_pos.origin[1] + (ax_pos.widths[1] - width) / 2 + margin[2]
+        y = ax_pos.origin[2] + ax_pos.widths[2] - height - margin[1]
     end
 
 	return BBox(x, x + width, y, y + height)
