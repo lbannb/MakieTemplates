@@ -10,6 +10,7 @@ global FONTSIZE = 8 # paper font size
 include("lib/helper.jl")
 include("lib/main.jl")
 include("lib/themes.jl")
+include("lib/templates.jl")
 include("exports.jl")
 
 end

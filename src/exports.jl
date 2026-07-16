@@ -7,3 +7,7 @@ export scatter_hollow!
 
 export markers_labels
 export markers_labels_hollow
+
+export paper_figure
+export plot_xy, plot_heatmap, plot_contour, plot_histogram, plot_quiver
+export SEQUENTIAL_CMAP, DIVERGING_CMAP
