@@ -1,4 +1,4 @@
-module juliaPlotting
+module MakieTemplates
 
 #= load external modules =#
 using CairoMakie, ColorSchemes, JLD2, Measurements, LaTeXStrings, LinearAlgebra
