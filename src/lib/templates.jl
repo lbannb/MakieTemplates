@@ -160,3 +160,7 @@ function plot_quiver(x, y, u, v; color_by_magnitude::Bool=true, lengthscale=:aut
     end
     return fig, ax, ar
 end
+
+function scatter_hollow!(ax::Axis, x, y; kwargs...)
+    scatter!(ax, x, y, color = :transparent; kwargs...)
+end

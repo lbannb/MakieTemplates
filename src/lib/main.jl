@@ -2,6 +2,83 @@
     main plotting functions
 =#
 
+function create_inset(fig::Figure, ax::Axis; 
+    xlabel::Union{String,LaTeXString}="",
+    ylabel::Union{String,LaTeXString}="",
+    xlims::Union{Tuple{Float64, Float64},Nothing}=nothing,
+    ylims::Union{Tuple{Float64, Float64},Nothing}=nothing,
+    width::Int=50, 
+    height::Int=50, 
+    position::Symbol=:rt, 
+    margin=(5,5,5,5))
+
+	inset = get_BBox(
+		ax,
+		width = width,
+		height = height,
+		position = position,
+		margin = margin,
+	)
+
+    ax_inset = Axis(fig;
+		bbox = inset,
+        xlabel=xlabel,
+        ylabel=ylabel,
+        limits = (xlims,ylims)
+	)
+
+    pretty_lims!(ax_inset, xlims, ylims)
+
+    return ax_inset
+end
+
+#= 
+ Taken from Malte Pütz (https://github.com/maltepuetz)
+=#
+function get_BBox(axis; width = 50, height = 50, position = :rt, margin = (3, 3, 3, 3))
+	# Get the axis position
+	ax_pos = axis.layoutobservables.computedbbox[]
+
+	# Calculate the position based on the specified corner
+	if position == :rt  # right top
+		x = ax_pos.origin[1] + ax_pos.widths[1] - width - margin[2]
+		y = ax_pos.origin[2] + ax_pos.widths[2] - height - margin[1]
+	elseif position == :lt  # left top
+		x = ax_pos.origin[1] + margin[4]
+		y = ax_pos.origin[2] + ax_pos.widths[2] - height - margin[1]
+	elseif position == :rb  # right bottom
+		x = ax_pos.origin[1] + ax_pos.widths[1] - width - margin[2]
+		y = ax_pos.origin[2] + margin[3]
+	elseif position == :lb  # left bottom
+		x = ax_pos.origin[1] + margin[4]
+		y = ax_pos.origin[2] + margin[3]
+	elseif position == :cb  # center bottom
+        x = ax_pos.origin[1] + (ax_pos.widths[1] - width) / 2 + margin[2]
+        y = ax_pos.origin[2] + margin[3]
+    elseif position == :ct  # center top
+        x = ax_pos.origin[1] + (ax_pos.widths[1] - width) / 2 + margin[2]
+        y = ax_pos.origin[2] + ax_pos.widths[2] - height - margin[1]
+    end
+
+	return BBox(x, x + width, y, y + height)
+end
+
+function pretty_lims!(ax, xlims, ylims)
+    #= add 5% spacing to the x/y ticks of the start and end of xlims/ylims =#
+    if !isnothing(xlims)
+        xrange = xlims[2] - xlims[1]
+        Makie.xlims!(ax, xlims[1] - 0.05*xrange, xlims[2] + 0.05*xrange)
+    end
+    if !isnothing(ylims)
+        yrange = ylims[2] - ylims[1]
+        Makie.ylims!(ax, ylims[1] - 0.05*yrange, ylims[2] + 0.05*yrange)
+    end
+end
+
+#= 
+    Different Layouts for plotting
+=#
+
 function layout_1_1(;
         theme::Function=main_theme!,
         xlabel::Union{String,LaTeXString}="", 
@@ -49,117 +126,4 @@ function layout_1_2(;
     pretty_lims!(ax2, isa(xlims, AbstractVector) ? xlims[2] : xlims, isa(ylims, AbstractVector) ? ylims[2] : ylims)
 
     return fig,ax1,ax2
-end
-
-function create_inset(fig::Figure, ax::Axis; 
-    xlabel::Union{String,LaTeXString}="",
-    ylabel::Union{String,LaTeXString}="",
-    xlims::Union{Tuple{Float64, Float64},Nothing}=nothing,
-    ylims::Union{Tuple{Float64, Float64},Nothing}=nothing,
-    width::Int=50, 
-    height::Int=50, 
-    position::Symbol=:rt, 
-    margin=(5,5,5,5))
-
-	inset = get_BBox(
-		ax,
-		width = width,
-		height = height,
-		position = position,
-		margin = margin,
-	)
-
-    ax_inset = Axis(fig;
-		bbox = inset,
-        xlabel=xlabel,
-        ylabel=ylabel,
-        limits = (xlims,ylims)
-	)
-
-    pretty_lims!(ax_inset, xlims, ylims)
-
-    return ax_inset
-end
-
-function scatter_hollow!(ax::Axis, x, y; kwargs...)
-    scatter!(ax, x, y, color = :transparent; kwargs...)
-end
-
-#= 
-see https://juliagraphics.github.io/ColorSchemes.jl/stable/goodpractice/ for good ColorSchemes
-=#
-function scatter_gradient!(fig::Figure,
-        ax::Axis, 
-        x::Union{Vector{Vector{Float64}},Vector{Vector{Int}}},
-        y::Vector{Vector{Float64}},
-        grad::Vector{Float64};
-        colormap::ColorScheme=ColorSchemes.linear_tritanopic_krjcw_5_95_c24_n256,
-        linestyle::Union{Symbol,Nothing}=nothing,
-        linewidth::Float64=1.0,
-        colorbarlabel::Union{String,LaTeXString}="")
-
-    # Get color values from colormap
-    normgrad = (grad .- minimum(grad)) ./ (maximum(grad) - minimum(grad))
-    colors = [get(colormap, g) for g in normgrad]
-
-    for i in eachindex(x)
-        if !isnothing(linestyle)
-            lines!(ax, x[i], y[i], color = colors[i], linestyle=linestyle, linewidth=linewidth)
-        end
-
-        scatter!(ax, x[i], y[i], color = colors[i])
-    end
-
-    # Add colorbar
-    Colorbar(fig[1,2], colormap=colormap, colorrange=(minimum(grad),maximum(grad)),
-        label=colorbarlabel)
-
-    colgap!(fig.layout, 5.0) # remove spacing between colorbar and plot
-end
-
-function scatter_many!(ax::Axis, 
-        x::Union{Vector{Vector{Float64}},Vector{Vector{Int}}},
-        y::Vector{Vector{Float64}};
-        labels = fill("", length(x)),
-        legendlabel::Union{String,LaTeXString}="",
-        legendpos::Symbol=:lt,
-        colors::ColorScheme=ColorSchemes.tol_bright,
-        linestyle::Union{Symbol,Nothing}=nothing,
-        markers::Union{Array{Symbol},Nothing} = markers_labels,
-        linewidth::Float64=1.0,
-        hollow::Bool=false)
-
-    for i in eachindex(x)
-        if !isnothing(linestyle)
-            lines!(ax, x[i], y[i], linestyle=linestyle, linewidth=linewidth)
-        end
-
-        if isnothing(markers)
-            if hollow
-                scatter!(ax, x[i], y[i], color = :transparent, strokecolor = colors[i], label = "$(labels[i])")
-            else
-                scatter!(ax, x[i], y[i], color = colors[i], label = "$(labels[i])")
-            end
-        else
-            if length(markers) == length(x)
-                if hollow
-                    scatter!(ax, x[i], y[i], color = :transparent, strokecolor = colors[i], marker = markers[i], label = "$(labels[i])")
-                else
-                    scatter!(ax, x[i], y[i], color = colors[i], marker = markers[i], label = "$(labels[i])")
-                end
-            else
-                if hollow
-                    scatter!(ax, x[i], y[i], color = :transparent, strokecolor = colors[i], label = "$(labels[i])")
-                else
-                    scatter!(ax, x[i], y[i], color = colors[i], label = "$(labels[i])")
-                end
-
-                @warn "The number of markers does not match the number of different scatter sets. \n The default marker is now applied to all scatter points."
-            end
-        end
-    end
-
-    if labels != fill("", length(x))
-        axislegend(ax, legendlabel, position=legendpos)
-    end
 end
