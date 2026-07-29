@@ -1,8 +1,7 @@
 #=
     Renders every template once to examples/output/*.pdf.
-    Run with: julia --project=.. render_all.jl (or --project=. from the repo root)
 =#
-using juliaPlotting, CairoMakie, Random
+using MakieTemplates, CairoMakie, Random
 
 outdir = joinpath(@__DIR__, "output")
 mkpath(outdir)

@@ -75,55 +75,33 @@ function pretty_lims!(ax, xlims, ylims)
     end
 end
 
-#= 
-    Different Layouts for plotting
+#=
+    Publication figure sizing (paper_figure) and plot templates.
+    All templates share the themes from themes.jl and return (fig, ax, plot).
 =#
 
-function layout_1_1(;
-        theme::Function=main_theme!,
-        xlabel::Union{String,LaTeXString}="", 
-        ylabel::Union{String,LaTeXString}="", 
-        xlims::Union{Tuple{Float64, Float64},Nothing}=nothing,
-        ylims::Union{Tuple{Float64, Float64},Nothing}=nothing)
+"""
+    paper_figure(; width_fraction=1.0, textwidth_pt=455.0, height_ratio=0.62,
+                 theme=main_theme!)
 
+Figure sized so that `\\includegraphics[width=<width_fraction>\\textwidth]{fig.pdf}`
+renders all text at exactly the theme's pt sizes — no LaTeX rescaling.
+
+- `textwidth_pt` is your document's `\\the\\textwidth` (in LaTeX pt). Activates PDF
+output with `pt_per_unit=1`, so 1 figure unit == 1 pt and the theme fontsizes
+are literal point sizes on paper.
+- `height_ratio` is the figure height / width ratio.
+- `theme` is a function that sets the theme from `themes.jl` (default: `main_theme!`).
+"""
+function paper_figure(; width_fraction::Real=1.0, textwidth_pt::Real=455.0,
+        height_ratio::Real=0.62, theme::Function=main_theme!)
     theme()
-    
-    fig = Figure()
-    ax = Axis(fig[1, 1],
-        xlabel = xlabel,
-        ylabel = ylabel,
-        limits = (xlims,ylims)
-    )
-
-    pretty_lims!(ax, xlims, ylims)
-
-    return fig,ax
+    w = width_fraction * textwidth_pt * TEXPT_TO_BP # convert to PDF big pt (1/72 in) for CairoMakie
+    return Figure(size=(w, height_ratio * w)) # return a Figure with the correct size in pt units
 end
 
-function layout_1_2(;
-        theme::Function=main_theme!,
-        xlabel::Union{Vector{Union{String,LaTeXString}},Union{String,LaTeXString},Nothing}=nothing, 
-        ylabel::Union{Vector{Union{String,LaTeXString}},Union{String,LaTeXString},Nothing}=nothing, 
-        xlims::Union{Vector{Union{Tuple{Float64, Float64},Nothing}},Tuple{Float64, Float64},Nothing}=nothing,
-        ylims::Union{Vector{Union{Tuple{Float64, Float64},Nothing}},Tuple{Float64, Float64},Nothing}=nothing)
-
-    theme()
-    
-    fig = Figure(size=(500, 200))
-    ax1 = Axis(fig[1, 1],
-        xlabel = isa(xlabel, AbstractVector) ? xlabel[1] : xlabel,
-        ylabel = isa(ylabel, AbstractVector) ? ylabel[1] : ylabel,
-        limits = (isa(xlims, AbstractVector) ? xlims[1] : xlims, isa(ylims, AbstractVector) ? ylims[1] : ylims)
-    )
-    ax2 = Axis(fig[1, 2],
-        xlabel = isa(xlabel, AbstractVector) ? xlabel[2] : xlabel,
-        ylabel = isa(ylabel, AbstractVector) ? ylabel[2] : ylabel,
-        limits = (isa(xlims, AbstractVector) ? xlims[2] : xlims, isa(ylims, AbstractVector) ? ylims[2] : ylims)
-    )
-
-
-    pretty_lims!(ax1, isa(xlims, AbstractVector) ? xlims[1] : xlims, isa(ylims, AbstractVector) ? ylims[1] : ylims)
-    pretty_lims!(ax2, isa(xlims, AbstractVector) ? xlims[2] : xlims, isa(ylims, AbstractVector) ? ylims[2] : ylims)
-
-    return fig,ax1,ax2
+function _template_axis(; ax_layout=[1,1], xlabel="", ylabel="", theme::Function=main_theme!, figure=(;))
+    fig = paper_figure(; theme, figure...)
+    ax = Axis(fig[ax_layout[1], ax_layout[2]]; xlabel, ylabel)
+    return fig, ax
 end

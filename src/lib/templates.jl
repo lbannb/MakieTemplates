@@ -1,46 +1,18 @@
-#=
-    Publication figure sizing (paper_figure) and plot templates.
-    All templates share the themes from themes.jl and return (fig, ax, plot).
-=#
-
-const TEXPT_TO_BP = 72 / 72.27 # LaTeX pt (1/72.27 in) -> PDF big pt (1/72 in)
-
-const SEQUENTIAL_CMAP = :viridis
-const DIVERGING_CMAP = ColorSchemes.vik
-
-"""
-    paper_figure(; width_fraction=1.0, textwidth_pt=455.0, height_ratio=0.62,
-                 theme=main_theme!)
-
-Figure sized so that `\\includegraphics[width=<width_fraction>\\textwidth]{fig.pdf}`
-renders all text at exactly the theme's pt sizes — no LaTeX rescaling.
-
-`textwidth_pt` is your document's `\\the\\textwidth` (in LaTeX pt). Activates PDF
-output with `pt_per_unit=1`, so 1 figure unit == 1 pt and the theme fontsizes
-are literal point sizes on paper.
-"""
-function paper_figure(; width_fraction::Real=1.0, textwidth_pt::Real=455.0,
-        height_ratio::Real=0.62, theme::Function=main_theme!)
-    theme()
-    # themes activate svg with pt_per_unit=1.75; exact paper sizing needs 1 unit == 1 pt
-    CairoMakie.activate!(type="pdf", pt_per_unit=1)
-    w = width_fraction * textwidth_pt * TEXPT_TO_BP
-    return Figure(size=(w, height_ratio * w))
-end
-
-function _template_axis(; xlabel="", ylabel="", theme::Function=main_theme!, figure=(;))
-    fig = paper_figure(; theme, figure...)
-    ax = Axis(fig[1, 1]; xlabel, ylabel)
-    return fig, ax
-end
-
 """
     plot_xy(x, y; yerr=nothing, markers=true, lines=false, errorstyle=:none,
-            xlabel="", ylabel="", figure=(;), kwargs...)
+            xlabel="", ylabel="", figure=(;), theme::Function=markers ? use_scatter_theme! : main_theme!, kwargs...)
 
-XY template. `errorstyle` is `:none`, `:bars`, `:band` or `:both` (needs `yerr`).
-`figure` forwards to [`paper_figure`](@ref), e.g. `figure=(width_fraction=0.5,)`.
-Remaining `kwargs` go to the scatter/lines calls. Returns `(fig, ax, plot)`.
+Basic X, Y plot.
+
+# Keyword arguments
+- `yerr`: optional error values for Y. If provided, `errorstyle` must be set
+- `markers`: whether to show markers (default: true) -> if `markers=false`, only lines are shown
+- `lines`: whether to show lines (default: false) -> if `lines=false`, only markers are shown
+- `errorstyle`: how to show errors, one of `:none`, `:bars`, `:band` or `:both`
+- `xlabel`, `ylabel`: axis labels
+- `figure`: keyword arguments for [`paper_figure`](@ref)
+- `kwargs`: remaining keyword arguments are forwarded to the scatter/lines calls
+
 """
 function plot_xy(x, y; yerr=nothing, markers::Bool=true, lines::Bool=false,
         errorstyle::Symbol=:none, xlabel="", ylabel="", figure=(;),
@@ -75,19 +47,65 @@ function plot_xy(x, y; yerr=nothing, markers::Bool=true, lines::Bool=false,
     return fig, ax, plt
 end
 
+function plot_xy!(ax, x, y; yerr=nothing, markers::Bool=true, lines::Bool=false,
+        errorstyle::Symbol=:none, kwargs...)
+
+    errorstyle in (:none, :bars, :band, :both) ||
+        throw(ArgumentError("errorstyle must be :none, :bars, :band or :both"))
+    errorstyle == :none || !isnothing(yerr) ||
+        throw(ArgumentError("errorstyle=:$errorstyle requires yerr"))
+    markers || lines ||
+        throw(ArgumentError("set markers=true and/or lines=true"))
+
+    # band matches the series color (first palette color unless overridden)
+    if errorstyle in (:band, :both)
+        bandcolor = get(kwargs, :color, ColorSchemes.tol_bright[1])
+        band!(ax, x, y .- yerr, y .+ yerr, color=(bandcolor, 0.25))
+    end
+
+    plt = nothing
+    if lines
+        plt = lines!(ax, x, y; kwargs...)
+    end
+    if errorstyle in (:bars, :both)
+        errorbars!(ax, x, y, yerr)
+    end
+    if markers
+        plt = scatter!(ax, x, y; kwargs...)
+    end
+end
+
 """
     plot_heatmap(x, y, z; xlabel="", ylabel="", colorbarlabel="",
-                 colormap=SEQUENTIAL_CMAP, figure=(;), kwargs...)
+                 colormap=SEQUENTIAL_CMAP, figure=(;), theme::Function=main_theme!, kwargs...)
 
-Heatmap with an attached Colorbar. Returns `(fig, ax, plot)`.
+Basic 2D heatmap plot.
+
+# Keyword arguments
+- `x` and `y`: 1D arrays of x and y coordinates
+- `z`: 2D array of values to plot
+- `xlabel`, `ylabel`: axis labels
+- `colorbarlabel`: label for the colorbar
+- `colormap`: colormap to use (default: `SEQUENTIAL_CMAP`)
+- `figure`: keyword arguments for [`paper_figure`](@ref)
+- `kwargs`: remaining keyword arguments are forwarded to the heatmap call
+
 """
 function plot_heatmap(x, y, z; xlabel="", ylabel="", colorbarlabel="",
         colormap=SEQUENTIAL_CMAP, figure=(;), theme::Function=main_theme!, kwargs...)
+
     fig, ax = _template_axis(; xlabel, ylabel, theme, figure)
     hm = heatmap!(ax, x, y, z; colormap, kwargs...)
     Colorbar(fig[1, 2], hm, label=colorbarlabel)
     colgap!(fig.layout, 5.0)
     return fig, ax, hm
+end
+
+function plot_heatmap!(ax, x, y, z; colorbarlabel="", colormap=SEQUENTIAL_CMAP, kwargs...)
+    hm = heatmap!(ax, x, y, z; colormap, kwargs...)
+    Colorbar(ax.figure[1, 2], hm, label=colorbarlabel)
+    colgap!(ax.figure.layout, 5.0)
+    return ax.figure, ax, hm
 end
 
 """

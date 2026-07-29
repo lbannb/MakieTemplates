@@ -10,9 +10,6 @@ function main_theme!()
         ),
         Axis=(
             titlefont=:regular,
-            titlesize=10,
-            xlabelsize=10,
-            ylabelsize=10,
             xgridvisible=false,
             ygridvisible=false,
             xticksize=2.5,
@@ -52,7 +49,7 @@ function main_theme!()
     )
 
     # use CairoMakie as backend
-    CairoMakie.activate!(type="svg", pt_per_unit=1.75)
+    CairoMakie.activate!(type="svg", pt_per_unit=1)
 
     theme = merge(theme, theme_latexfonts())
     update_theme!(theme)
