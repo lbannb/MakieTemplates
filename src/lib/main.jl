@@ -29,6 +29,9 @@ function create_inset(fig::Figure, ax::Axis;
 
     pretty_lims!(ax_inset, xlims, ylims)
 
+    # Translate the inset axis forward in the z-direction
+    translate!(ax_inset.blockscene, 0, 0, 100)
+
     return ax_inset
 end
 
