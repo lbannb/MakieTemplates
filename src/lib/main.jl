@@ -2,15 +2,30 @@
     main plotting functions
 =#
 
-function create_inset(fig::Figure, ax::Axis; 
+"""
+    create_inset(fig, ax; xlabel, ylabel, xlims, ylims, width=50, height=50,
+                 position=:rt, margin=(5,5,5,5), ticklabelsize=nothing, kwargs...)
+
+Inset axis of `width` × `height` in the corner `position` (:rt, :lt, :rb, :lb, :ct, :cb)
+of `ax`, drawn in front of it. Call it after the rest of the layout (legends, colorbars)
+is in place, since it reads the final position of `ax`.
+
+- `ticklabelsize`: size of the x and y tick labels (default: the theme's, which is
+  usually too large for a small inset).
+- `kwargs...` are passed on to `Axis`, e.g. `yscale=log10`, `xticks=…`, `yticks=…`,
+  `xlabelsize=…`.
+"""
+function create_inset(fig::Figure, ax::Axis;
     xlabel::Union{String,LaTeXString}="",
     ylabel::Union{String,LaTeXString}="",
     xlims::Union{Tuple{Float64, Float64},Nothing}=nothing,
     ylims::Union{Tuple{Float64, Float64},Nothing}=nothing,
-    width::Int=50, 
-    height::Int=50, 
-    position::Symbol=:rt, 
-    margin=(5,5,5,5))
+    width::Int=50,
+    height::Int=50,
+    position::Symbol=:rt,
+    margin=(5,5,5,5),
+    ticklabelsize::Union{Real,Nothing}=nothing,
+    kwargs...)
 
 	inset = get_BBox(
 		ax,
@@ -20,11 +35,15 @@ function create_inset(fig::Figure, ax::Axis;
 		margin = margin,
 	)
 
+    ticksizes = isnothing(ticklabelsize) ? (;) :
+                (xticklabelsize=ticklabelsize, yticklabelsize=ticklabelsize)
     ax_inset = Axis(fig;
 		bbox = inset,
         xlabel=xlabel,
         ylabel=ylabel,
-        limits = (xlims,ylims)
+        limits = (xlims,ylims),
+        ticksizes...,
+        kwargs...
 	)
 
     pretty_lims!(ax_inset, xlims, ylims)

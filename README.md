@@ -42,5 +42,18 @@ All return `(fig, ax, plot)`; see `examples/templates.ipynb` for a gallery and
 Colors: `tol_bright` (colorblind-safe categorical), `SEQUENTIAL_CMAP` (viridis),
 `DIVERGING_CMAP` (vik).
 
+## Helpers
+
+- `create_inset(fig, ax; width, height, position, margin, ticklabelsize, kwargs...)` —
+  inset axis in a corner of `ax`; `ticklabelsize` sets both tick label sizes, other
+  keywords go to `Axis` (`yscale=log10`, `xticks`, …). Call it after the legend is placed.
+- Legend entries (use with e.g. `patchsize=(16, 10)`):
+  `legend_box(color)` filled box, `legend_line(color; linestyle)` thick line (dashed
+  thinner, so the dashes show), `legend_lines(colors)` several stacked lines in one
+  entry (e.g. the single runs of several series).
+- Ticks and labels: `decade_ticks(lo, hi)` (10^k on a log axis), `log_ticks(lo, hi;
+  negative)` (m·10^k over a narrow log range), `power_of_ten(vmax)` and
+  `scaled_label(label, k)` for an axis in units of 10^k.
+
 ## List of useful links for plotting:
 - Color Schemes: https://cran.r-project.org/web/packages/khroma/vignettes/tol.html

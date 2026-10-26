@@ -52,6 +52,8 @@ const markers_labels = [
 
 #= load local files =#
 include("lib/main.jl")
+include("lib/legend.jl")
+include("lib/ticks.jl")
 include("lib/themes.jl")
 include("lib/templates.jl")
 include("exports.jl")
